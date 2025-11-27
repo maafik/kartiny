@@ -570,6 +570,14 @@
       window.openOrder(image, title, price, videoId);
     }
 
+    // Функция очистки видео
+    function clearVideo() {
+      const videoIframe = document.getElementById('orderVideoIframe');
+      if (videoIframe) {
+        videoIframe.src = '';
+      }
+    }
+
     // Обновляем closeOrder, чтобы очищать видео
     window.closeOrder = function(event) {
       if (event) {
@@ -577,11 +585,7 @@
         event.stopPropagation();
       }
       
-      // Очищаем видео при закрытии
-      const videoIframe = document.getElementById('orderVideoIframe');
-      if (videoIframe) {
-        videoIframe.src = '';
-      }
+      clearVideo();
       
       // Закрываем попап
       const popup = document.getElementById('orderPopup');
@@ -594,6 +598,24 @@
       if (popupHistoryActive) {
         popupHistoryActive = false;
         window.history.back();
+      }
+    };
+
+    // Переопределяем hideOrderPopup чтобы очищать видео
+    const originalHideOrderPopup = window.hideOrderPopup || function() {};
+    window.hideOrderPopup = function(scrollTarget) {
+      clearVideo();
+      const popup = document.getElementById('orderPopup');
+      if (!popup) return;
+      popup.style.display = 'none';
+      document.body.style.overflow = '';
+      if (typeof scrollTarget === 'number') {
+        requestAnimationFrame(() => {
+          window.scrollTo({
+            top: scrollTarget,
+            behavior: 'auto'
+          });
+        });
       }
     };
   </script>
